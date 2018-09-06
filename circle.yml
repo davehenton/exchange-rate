@@ -96,16 +96,17 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            export CODECOV_REPORT_LOCATION=app/build/reports/jacoco/testReleaseUnitTestCoverage/testReleaseUnitTestCoverage.xml
-            export TEST_GROUP_INDEX=${CIRCLE_NODE_INDEX}
-            export TEST_GROUPS_COUNT=${CIRCLE_NODE_TOTAL}
-            echo "Running test group ${TEST_GROUP_INDEX} out of ${TEST_GROUPS_COUNT}..."
-            ./gradlew --no-daemon --stacktrace testReleaseUnitTest testReleaseUnitTestCoverage
-            if [[ -f $CODECOV_REPORT_LOCATION ]]; then
-              curl https://codecov.io/bash -o codecov.sh
-              chmod +x codecov.sh
-              ./codecov.sh -X gcov -X coveragepy -f ${CODECOV_REPORT_LOCATION}
-            fi
+            upload-coverage:
+    environment: 
+      - CC_TEST_REPORTER_ID: e108ce35be2fcd98a66d6265e551c5354e1737b2bc58cfd22cfa61beda1b9a8c
+    steps:
+      - attach_workspace:
+          at: ~/repo/tmp
+      - run:
+          name: Upload coverage results to Code Climate
+          command: |
+            ./tmp/cc-test-reporter sum-coverage tmp/codeclimate.*.json -p 3 -o tmp/codeclimate.total.json
+            ./tmp/cc-test-reporter upload-coverage -i tmp/codeclimate.total.j
 
       - store_artifacts:
           path: app/build/reports/tests/
