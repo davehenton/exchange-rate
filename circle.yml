@@ -37,10 +37,6 @@ jobs:
           command: echo $GOOGLE_SERVICES_CONFIGURATION | base64 --decode > ~/code/app/google-services.json
 
       - run:
-          name: Setup dependencies
-          command: ./gradlew --no-daemon --stacktrace androidDependencies
-
-      - run:
           name: Initial build
           command: ./gradlew --no-daemon --stacktrace assembleRelease
 
